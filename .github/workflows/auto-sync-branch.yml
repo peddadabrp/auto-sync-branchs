@@ -1,0 +1,30 @@
+name: Auto Sync from main to other-main
+
+on: 
+  push: 
+    branches:
+      - main 
+
+jobs: 
+  branch-sync:
+    runs-on: ubuntu-latest 
+    steps: 
+      - name: Checkout code
+        uses: actions/checkout@v4     
+        with: 
+          fetch-depth: 0 
+
+      - name: Set up git config
+        run: | 
+          git config --global user.name 'r0p05o0'
+          git config --global user.email 'rajendra.peddada@walmart.com'
+          
+      - name: Push changes to other-main when main is updated
+        if: github.ref == 'refs/heads/main' 
+        run: | 
+          git fetch origin 
+          git checkout other-main
+          git merge main -X theirs
+          git push origin other-main
+
+# "git merge main -X theirs" add this commad to auto resolve merge conflicts, this will take changes from main branch.
